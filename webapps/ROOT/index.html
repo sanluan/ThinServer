@@ -11,31 +11,21 @@
 </head>
 <body>
 <div id="sidedrawer" class="mui--no-user-select">
-	<div id="sidedrawer-brand" class="mui--appbar-line-height mui--text-title">Brand.io</div>
+	<div id="sidedrawer-brand" class="mui--appbar-line-height mui--text-title">ThinServer</div>
 	<div class="mui-divider"></div>
 	<ul>
 	  <li>
-		<strong>Category 1</strong>
+		<strong>ThinServer</strong>
 		<ul>
-		  <li><a href="#">Item 1</a></li>
-		  <li><a href="#">Item 2</a></li>
-		  <li><a href="#">Item 3</a></li>
+		  <li><a href="http://git.oschina.net/sanluan/ThinServer" target="blank">GIT源码托管</a></li>
 		</ul>
 	  </li>
 	  <li>
-		<strong>Category 2</strong>
+		<strong>PublicCMS</strong>
 		<ul>
-		  <li><a href="#">Item 1</a></li>
-		  <li><a href="#">Item 2</a></li>
-		  <li><a href="#">Item 3</a></li>
-		</ul>
-	  </li>
-	  <li>
-		<strong>Category 3</strong>
-		<ul>
-		  <li><a href="#">Item 1</a></li>
-		  <li><a href="#">Item 2</a></li>
-		  <li><a href="#">Item 3</a></li>
+		  <li><a href="http://www.publiccms.com/" target="blank">主页</a></li>
+		  <li><a href="http://git.oschina.net/sanluan/PublicCMS" target="blank">GIT源码托管</a></li>
+		  <li><a href="http://shang.qq.com/wpa/qunwpa?idkey=8a633f84fb2475068182d3c447319977faca6a14dc3acf8017a160d65962a175" target="blank">QQ群</a></li>
 		</ul>
 	  </li>
 	</ul>
@@ -45,7 +35,7 @@
     <div class="mui-container-fluid">
       <a class="sidedrawer-toggle mui--visible-xs-inline-block js-show-sidedrawer">☰</a>
       <a class="sidedrawer-toggle mui--hidden-xs js-hide-sidedrawer">☰</a>
-      <span class="mui--text-title mui--visible-xs-inline-block">Brand.io</span>
+      <span class="mui--text-title mui--visible-xs-inline-block">ThinServer</span>
     </div>
   </div>
 </header>
@@ -53,40 +43,20 @@
 	<div class="mui--appbar-height"></div>
 	<div class="mui-container-fluid">
 	  <br>
-	  <h1>Brand.io</h1>
+	  <h1>已部署应用</h1>
 	  <p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-		sollicitudin volutpat molestie. Nullam id tempor nulla. Aenean sit amet
-		urna et elit pharetra consequat. Aliquam fringilla tortor vitae lectus
-		tempor, tempor bibendum nunc elementum. Etiam ultrices tristique diam,
-		vitae sodales metus bibendum id. Suspendisse blandit ligula eu fringilla
-		pretium. Mauris dictum gravida tortor eu lacinia. Donec purus purus,
-		ornare sit amet consectetur sed, dictum sitamet ex. Vivamus sit amet
-		imperdiet tellus. Quisque ultrices risus a massa laoreet, vitae tempus sem
-		congue. Maecenas nec eros ut lectus vehicula rutrum. Donec consequat
-		tincidunt arcu non faucibus. Duis elementum, ante venenatis lacinia
-		cursus, turpis massa congue magna, sed dapibus felis nibh sed tellus. Nam
-		consectetur non nibh vitae sodales. Pellentesque malesuada dolor nec mi
-		volutpat, eget vehicula eros ultrices.
-	  </p>
-	  <p>
-		Aenean vehicula tortor a tellus porttitor, id elementum est tincidunt.
-		Etiam varius odio tortor. Praesent vel pulvinar sapien. Praesent ac
-		sodales sem. Phasellus id ultrices massa. Sed id erat sit amet magna
-		accumsan vulputate eu at quam. Etiam feugiat semper imperdiet. Sed a sem
-		vitae massa condimentum vestibulum. In vehicula, quam vel aliquet aliquam,
-		enim elit placerat libero, at pretium nisi lorem in ex. Vestibulum lorem
-		augue, semper a efficitur in, dictum vitae libero. Donec velit est,
-		sollicitudin a volutpat quis, iaculis sit amet metus. Nulla at ante nec
-		dolor euismod mattis cursus eu nisl.
-	  </p>
-	  <p>
-		Quisque interdum facilisis consectetur. Nam eu purus purus. Curabitur in
-		ligula quam. Nam euismod ligula eu tellus pellentesque laoreet. Aliquam
-		erat volutpat. Curabitur eu bibendum velit. Cum sociis natoque penatibus
-		et magnis dis parturient montes, nascetur ridiculus mus. Nunc efficitur
-		lorem sit amet quam porta pharetra. Cras ultricies pellentesque eros sit
-		amet semper.
+<#list handlerMap?keys>
+	<ul class="mui-tabs__bar">
+	<#items as k>
+	  <li<#if k?is_first> class="mui--is-active"</#if>><a data-mui-toggle="tab" data-mui-controls="pane-justified-${k?index}">${k}</a></li>
+	</#items>
+	</ul>
+</#list>
+<#list handlerMap?keys as k>
+	<div class="mui-tabs__pane<#if k?is_first> mui--is-active</#if>" id="pane-justified-${k?index}">
+		应用路径：${handlerMap[k].webappPath}
+	</div>
+</#list>
 	  </p>
 	</div>
 </div>
@@ -121,7 +91,6 @@ jQuery(function($) {
 	$('.js-show-sidedrawer').on('click', showSidedrawer);
 	$('.js-hide-sidedrawer').on('click', hideSidedrawer);
 	var $titleEls = $('strong', $sidedrawerEl);
-	$titleEls.next().hide();
 	$titleEls.on('click', function() {
 	  $(this).next().slideToggle(200);
 	});
