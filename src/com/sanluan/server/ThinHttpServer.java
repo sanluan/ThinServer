@@ -81,7 +81,7 @@ public class ThinHttpServer implements Thin {
             httpserver.createContext(getContextPath(path), handler.setWebappPath(webappPath).init());
             log.info("[" + path + "] initialize complete!");
         } else {
-            log.info("[" + path + "] not exists!");
+            log.info("[" + path + "] not exists! path:" + webappPath);
         }
     }
 

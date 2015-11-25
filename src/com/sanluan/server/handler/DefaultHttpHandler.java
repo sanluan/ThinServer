@@ -45,17 +45,19 @@ public class DefaultHttpHandler extends ThinHttpHandler {
         for (Entry<ThinServlet, String[]> entry : servletMappings.entrySet()) {
             if (null != entry.getValue()) {
                 for (String path : entry.getValue()) {
+                    ThinServlet servlet = entry.getKey();
                     if (null == defaultServlet && SEPARATOR.equals(path)) {
-                        defaultServlet = entry.getKey();
+                        defaultServlet = servlet;
                     } else {
-                        if (path.startsWith(SEPARATOR) && SEPARATOR.endsWith(SEPARATOR + "*")) {
-                            dirMappings.put(path.substring(0, path.length() - 2), entry.getKey());
+                        if (path.startsWith(SEPARATOR) && path.endsWith(SEPARATOR + "*")) {
+                            dirMappings.put(path.substring(1, path.length() - 1), servlet);
                         } else if (path.startsWith("*.")) {
-                            fileTypeMappings.put(path.substring(1), entry.getKey());
+                            fileTypeMappings.put(path.substring(1), servlet);
                         } else {
-                            urlMappings.put(path, entry.getKey());
+                            urlMappings.put(path, servlet);
                         }
                     }
+                    log.info(path + " mapping to " + servlet.getClass().getName());
                 }
             }
         }
@@ -74,7 +76,6 @@ public class DefaultHttpHandler extends ThinHttpHandler {
             customHandler.shutdown();
         }
         appClassLoader = null;
-        System.gc();
         return this;
     }
 
@@ -97,6 +98,8 @@ public class DefaultHttpHandler extends ThinHttpHandler {
             } else {
                 if (path.endsWith(SEPARATOR)) {
                     path += WELCOME_FILE;
+                } else if ("".equals(path)) {
+                    path = SEPARATOR + WELCOME_FILE;
                 }
                 getServlet(path).deal(path, httpExchange);
             }

@@ -23,10 +23,6 @@ public class ManagerServlet implements ThinServlet {
     @Override
     public void deal(String path, HttpExchange httpExchange) {
         String[] commonds = path.substring(PREFIX.length(), path.length()).split(SEPARATOR);
-        log.info(path);
-        for (String c : commonds) {
-            log.info(c);
-        }
         if (null != commonds) {
             switch (commonds[0]) {
             case "shutdown":
@@ -35,7 +31,11 @@ public class ManagerServlet implements ThinServlet {
                 break;
             case "load":
                 if (2 < commonds.length) {
-                    handler.getHttpServer().load(commonds[1], commonds[2]);
+                    String dir = "";
+                    for (int i = 2; i < commonds.length; i++) {
+                        dir += commonds[i] + "/";
+                    }
+                    handler.getHttpServer().load(commonds[1], dir);
                 } else {
                     handler.getHttpServer().load(commonds[1]);
                 }

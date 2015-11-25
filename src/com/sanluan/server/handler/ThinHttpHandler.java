@@ -36,11 +36,7 @@ public abstract class ThinHttpHandler implements HttpHandler, Thin {
     }
 
     public String getPath(HttpExchange httpExchange) {
-        String path = httpExchange.getRequestURI().getPath();
-        if (!SEPARATOR.equals(path)) {
-            path = path.substring(httpExchange.getHttpContext().getPath().length());
-        }
-        return path;
+        return httpExchange.getRequestURI().getPath().substring(httpExchange.getHttpContext().getPath().length());
     }
 
     @Override

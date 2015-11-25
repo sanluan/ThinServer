@@ -56,6 +56,7 @@ public class DefaultServlet implements ThinServlet {
                     httpExchange.sendResponseHeaders(302, 0);
                 }
             } else {
+                log.error(path + " not found");
                 httpExchange.sendResponseHeaders(404, 0);
             }
         } catch (IOException e) {
