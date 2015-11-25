@@ -1,5 +1,6 @@
 package com.sanluan.manager;
 
+import static com.sanluan.server.ThinHttpServer.WEBAPP_ROOT_PATH;
 import static org.apache.commons.logging.LogFactory.getLog;
 
 import java.io.IOException;
@@ -40,7 +41,9 @@ public class ManagerServlet implements ThinServlet {
                 }
                 break;
             case "unload":
-                handler.getHttpServer().unLoad(commonds[1]);
+                if (!WEBAPP_ROOT_PATH.equals(commonds[1])) {
+                    handler.getHttpServer().unLoad(commonds[1]);
+                }
                 break;
             case "reload":
                 handler.getHttpServer().reLoad(commonds[1]);

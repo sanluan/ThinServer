@@ -12,6 +12,8 @@ ThinServer是基于JDK提供的HttpServer开发的Web服务容器，体积小，
 ##授权
 该软件永久开源免费(MIT 授权协议)
 
-![](doc/class.png)
+![](doc/index1.png)
 
-![](doc/index.png)
+![](doc/index1.png)
+
+![](doc/class.png)
