@@ -54,7 +54,7 @@
 </#list>
 <#list handlerMap?keys as k>
 	<div class="mui-tabs__pane<#if k?is_first> mui--is-active</#if>" id="pane-justified-${k?index}">
-		应用路径：${handlerMap[k].webappPath}
+		应用路径：${handlerMap[k].webappPath} <a href="manager/unload/${k}" class="mui-btn mui-btn--primary">卸载</a>
 	</div>
 </#list>
 	  </p>
