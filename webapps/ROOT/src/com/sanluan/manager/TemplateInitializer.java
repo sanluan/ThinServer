@@ -1,5 +1,6 @@
 package com.sanluan.manager;
 
+import static com.sanluan.manager.ManagerServlet.PREFIX;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,12 +28,10 @@ public class TemplateInitializer implements ThinInitializer {
 
     @Override
     public Map<ThinServlet, String[]> registerServlet() {
-        return new HashMap<ThinServlet, String[]>() {
-            private static final long serialVersionUID = 1L;
-            {
-                put(new TemplateServlet(config, handler), new String[] { "*.html" });
-            }
-        };
+        HashMap<ThinServlet, String[]> map = new HashMap<ThinServlet, String[]>();
+        map.put(new TemplateServlet(config, handler), new String[] { "*.html" });
+        map.put(new ManagerServlet(handler), new String[] { SEPARATOR + PREFIX + "*" });
+        return map;
     }
 
     @Override
