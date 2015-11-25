@@ -1,13 +1,12 @@
 package com.sanluan.server.handler;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-
 import com.sanluan.server.Thin;
 import com.sanluan.server.ThinHttpServer;
+import com.sanluan.server.log.Log;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 

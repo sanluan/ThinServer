@@ -1,6 +1,6 @@
 package com.sanluan.server.socket;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +8,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-
 import com.sanluan.server.Thin;
 import com.sanluan.server.ThinServerController;
+import com.sanluan.server.log.Log;
 
 public class ClientServerController implements Thin {
     private Socket socket;
@@ -54,12 +53,6 @@ public class ClientServerController implements Thin {
 
     public void load(String path, String webappPath) {
         output.println(ThinServerController.COMMOND_LOAD + BLANKSPACE + path + BLANKSPACE + webappPath);
-        readLine();
-    }
-
-    public void load(String path, String webappPath, String handlerClassPath) {
-        output.println(ThinServerController.COMMOND_LOAD + BLANKSPACE + path + BLANKSPACE + webappPath + BLANKSPACE
-                + handlerClassPath);
         readLine();
     }
 

@@ -1,6 +1,6 @@
 package com.sanluan.server.socket;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,10 +8,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-
 import com.sanluan.server.Thin;
 import com.sanluan.server.ThinServerController;
+import com.sanluan.server.log.Log;
 
 public class SocketServerController implements Runnable, Thin {
     private Socket socket;
@@ -76,9 +75,6 @@ public class SocketServerController implements Runnable, Thin {
                             break;
                         case 3:
                             controller.load(commonds[1], commonds[2]);
-                            break;
-                        case 4:
-                            controller.load(commonds[1], commonds[2], commonds[3]);
                             break;
                         default:
                             output.println("Invalid number of load parameters");

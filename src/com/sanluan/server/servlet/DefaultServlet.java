@@ -1,6 +1,6 @@
 package com.sanluan.server.servlet;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,8 +9,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-
+import com.sanluan.server.log.Log;
 import com.sun.net.httpserver.HttpExchange;
 
 public class DefaultServlet implements ThinServlet {

@@ -1,6 +1,6 @@
 package com.sanluan.server;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,9 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-
 import com.sanluan.server.handler.DefaultHttpHandler;
 import com.sanluan.server.handler.ThinHttpHandler;
+import com.sanluan.server.log.Log;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.spi.HttpServerProvider;
 
@@ -64,16 +63,14 @@ public class ThinHttpServer implements Thin {
     }
 
     public void load(String path) {
-        load(path, null, null);
+        load(path, null);
     }
 
-    public void load(String path, String webappPath, ThinHttpHandler handler) {
+    public void load(String path, String webappPath) {
         log.info("[" + path + "] initialize start!");
-        if (null == handler) {
-            handler = new DefaultHttpHandler();
-            if (WEBAPP_ROOT_PATH == path) {
-                handler.setHttpServer(this);
-            }
+        ThinHttpHandler handler = new DefaultHttpHandler();
+        if (WEBAPP_ROOT_PATH == path) {
+            handler.setHttpServer(this);
         }
         if (null == webappPath) {
             webappPath = SERVER_ROOT_PATH + SEPARATOR + path;
@@ -86,6 +83,17 @@ public class ThinHttpServer implements Thin {
         } else {
             log.info("[" + path + "] not exists!");
         }
+    }
+
+    public void unLoad(String path) {
+        handlerMap.get(path).shutdown();
+        httpserver.removeContext(getContextPath(path));
+        handlerMap.remove(path);
+    }
+
+    public void reLoad(String path) {
+        unLoad(path);
+        load(path, null);
     }
 
     public String getContextPath(String path) {
@@ -105,17 +113,6 @@ public class ThinHttpServer implements Thin {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    public void unLoad(String path) {
-        handlerMap.get(path).shutdown();
-        httpserver.removeContext(getContextPath(path));
-    }
-
-    public void reLoad(String path) {
-        unLoad(path);
-        ThinHttpHandler handler = handlerMap.get(path);
-        load(path, null, handler.init());
     }
 
     public Map<String, ThinHttpHandler> getHandlerMap() {

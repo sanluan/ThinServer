@@ -1,6 +1,6 @@
 package com.sanluan.server;
 
-import static org.apache.commons.logging.LogFactory.getLog;
+import static com.sanluan.server.log.Log.getLog;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-
-import com.sanluan.server.handler.ThinHttpHandler;
+import com.sanluan.server.log.Log;
 import com.sanluan.server.socket.ClientServerController;
 import com.sanluan.server.socket.SocketServerController;
 
@@ -46,9 +44,6 @@ public class ThinServerController implements Thin {
                     break;
                 case 3:
                     client.load(args[1], args[2]);
-                    break;
-                case 4:
-                    client.load(args[1], args[2], args[3]);
                     break;
                 default:
                     log.error("Invalid number of load parameters");
@@ -85,16 +80,6 @@ public class ThinServerController implements Thin {
         return httpserver.shutdownServerSocketController();
     }
 
-    public synchronized void load(String path, String webappPath, String handlerClassName) {
-        try {
-            @SuppressWarnings("unchecked")
-            Class<ThinHttpHandler> handler = (Class<ThinHttpHandler>) Class.forName(handlerClassName);
-            httpserver.load(path, webappPath, handler.newInstance().setWebappPath(webappPath).init());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            httpserver.load(path, webappPath, null);
-        }
-    }
-
     public void loadConfig() {
         File loadConf = new File(LOAD_CONF);
         if (loadConf.exists() && loadConf.isFile()) {
@@ -111,9 +96,6 @@ public class ThinServerController implements Thin {
                     case 2:
                         load(paramters[0], paramters[1]);
                         break;
-                    case 3:
-                        load(paramters[0], paramters[1], paramters[2]);
-                        break;
                     }
                 }
                 read.close();
@@ -127,7 +109,7 @@ public class ThinServerController implements Thin {
     }
 
     public synchronized void load(String path, String webappPath) {
-        httpserver.load(path, webappPath, null);
+        httpserver.load(path, webappPath);
     }
 
     public synchronized void reLoad(String path) {
