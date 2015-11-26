@@ -14,6 +14,6 @@ ThinServer是基于JDK提供的HttpServer开发的Web服务容器，体积小，
 
 ![](doc/index1.png)
 
-![](doc/index1.png)
+![](doc/index2.png)
 
 ![](doc/class.png)
