@@ -24,37 +24,47 @@ public class ManagerServlet implements ThinServlet {
     public void deal(String path, HttpExchange httpExchange) {
         String[] commonds = path.substring(PREFIX.length(), path.length()).split(SEPARATOR);
         if (null != commonds) {
-            switch (commonds[0]) {
-            case "shutdown":
-                handler.getHttpServer().stop();
-                handler.getHttpServer().shutdownServerSocketController();
-                break;
-            case "load":
-                if (2 < commonds.length) {
-                    String dir = "";
-                    for (int i = 2; i < commonds.length; i++) {
-                        dir += commonds[i] + "/";
+            if (null != handler.getHttpServer()) {
+                switch (commonds[0]) {
+                case "shutdown":
+                    handler.getHttpServer().stop();
+                    handler.getHttpServer().shutdownServerSocketController();
+                    break;
+                case "load":
+                    if (2 < commonds.length) {
+                        String dir = "";
+                        for (int i = 2; i < commonds.length; i++) {
+                            dir += commonds[i] + "/";
+                        }
+                        handler.getHttpServer().load(commonds[1], dir);
+                    } else {
+                        handler.getHttpServer().load(commonds[1]);
                     }
-                    handler.getHttpServer().load(commonds[1], dir);
-                } else {
-                    handler.getHttpServer().load(commonds[1]);
+                    break;
+                case "unload":
+                    if (!WEBAPP_ROOT_PATH.equals(commonds[1])) {
+                        handler.getHttpServer().unLoad(commonds[1]);
+                    }
+                    break;
+                case "reload":
+                    handler.getHttpServer().reLoad(commonds[1]);
+                    break;
                 }
-                break;
-            case "unload":
-                if (!WEBAPP_ROOT_PATH.equals(commonds[1])) {
-                    handler.getHttpServer().unLoad(commonds[1]);
+                try {
+                    byte[] bytes = "{\"result\":\"success\"}".getBytes();
+                    httpExchange.sendResponseHeaders(200, bytes.length);
+                    httpExchange.getResponseBody().write(bytes);
+                    httpExchange.getResponseBody().flush();
+                } catch (IOException e) {
                 }
-                break;
-            case "reload":
-                handler.getHttpServer().reLoad(commonds[1]);
-                break;
-            }
-            try {
-                byte[] bytes = "{\"result\":\"success\"}".getBytes();
-                httpExchange.sendResponseHeaders(200, bytes.length);
-                httpExchange.getResponseBody().write(bytes);
-                httpExchange.getResponseBody().flush();
-            } catch (IOException e) {
+            } else {
+                try {
+                    byte[] bytes = "{\"result\":\"error\",\"message\":\"ungrant\"}".getBytes();
+                    httpExchange.sendResponseHeaders(200, bytes.length);
+                    httpExchange.getResponseBody().write(bytes);
+                    httpExchange.getResponseBody().flush();
+                } catch (IOException e) {
+                }
             }
         }
     }

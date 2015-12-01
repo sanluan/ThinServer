@@ -34,7 +34,9 @@ public class TemplateServlet implements ThinServlet {
             httpExchange.sendResponseHeaders(200, 0);
             OutputStreamWriter writer = new OutputStreamWriter(httpExchange.getResponseBody(), DEFAULT_CHARSET);
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("handlerMap", handler.getHttpServer().getHandlerMap());
+            if (null != handler.getHttpServer()) {
+                map.put("handlerMap", handler.getHttpServer().getHandlerMap());
+            }
             template.process(map, writer);
         } catch (IOException e) {
             try {

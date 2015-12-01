@@ -36,7 +36,6 @@ public class ThinHttpServer implements Thin {
             log.info("Http Listen on " + port);
             serverSocket = new ServerSocket(control_port);
             log.info("Control Listen on " + control_port);
-            load(WEBAPP_ROOT_PATH);
             ThinServerController controller = new ThinServerController(this);
             controller.loadConfig();
             log.info("Http Listen on " + port);
@@ -50,8 +49,8 @@ public class ThinHttpServer implements Thin {
     }
 
     public static void main(String[] args) {
-        new ThinHttpServer(Integer.getInteger("com.sanluan.httpserver.MiniHttpServer.port", 80).intValue(), Integer.getInteger(
-                "com.sanluan.httpserver.MiniHttpServer.controlPort", 8010).intValue());
+        new ThinHttpServer(Integer.getInteger("com.sanluan.server.ThinHttpServer.port", 80).intValue(), Integer.getInteger(
+                "com.sanluan.server.ThinHttpServer.controlPort", 8010).intValue());
     }
 
     public void stop() {

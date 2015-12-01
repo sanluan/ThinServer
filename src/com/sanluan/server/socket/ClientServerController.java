@@ -56,6 +56,11 @@ public class ClientServerController implements Thin {
         readLine();
     }
 
+    public void grant(String path) {
+        output.println(ThinServerController.COMMOND_GRANT + BLANKSPACE + path);
+        readLine();
+    }
+
     public void load(String path) {
         output.println(ThinServerController.COMMOND_LOAD + BLANKSPACE + path);
         readLine();

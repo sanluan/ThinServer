@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import com.sanluan.server.handler.ThinHttpHandler;
 import com.sanluan.server.log.Log;
 import com.sanluan.server.socket.ClientServerController;
 import com.sanluan.server.socket.SocketServerController;
@@ -22,6 +23,7 @@ public class ThinServerController implements Thin {
     public static final String COMMOND_BYE = "bye";
     public static final String COMMOND_UNLOAD = "unload";
     public static final String COMMOND_SHUTDOWN = "shutdown";
+    public static final String COMMOND_GRANT = "grant";
     final Log log = getLog(getClass());
 
     public ThinServerController(ThinHttpServer httpServer) {
@@ -63,6 +65,13 @@ public class ThinServerController implements Thin {
                     log.error("Invalid number of load parameters");
                 }
                 break;
+            case COMMOND_GRANT:
+                if (1 < args.length) {
+                    client.grant(args[1]);
+                } else {
+                    log.error("Invalid number of load parameters");
+                }
+                break;
             case COMMOND_BYE:
                 client.close();
                 break;
@@ -86,15 +95,20 @@ public class ThinServerController implements Thin {
             try {
                 FileInputStream inputStream = new FileInputStream(loadConf);
                 InputStreamReader read = new InputStreamReader(new FileInputStream(loadConf), DEFAULT_CHARSET);
+                BufferedReader bufferedReader = new BufferedReader(read);
                 String line;
-                while ((line = new BufferedReader(read).readLine()) != null) {
+                while ((line = bufferedReader.readLine()) != null) {
                     String[] paramters = line.split(BLANKSPACE);
                     switch (paramters.length) {
                     case 1:
                         load(paramters[0]);
                         break;
                     case 2:
-                        load(paramters[0], paramters[1]);
+                        if (COMMOND_GRANT.equalsIgnoreCase(paramters[0])) {
+                            grant(paramters[1]);
+                        } else {
+                            load(paramters[0], paramters[1]);
+                        }
                         break;
                     }
                 }
@@ -114,6 +128,13 @@ public class ThinServerController implements Thin {
 
     public synchronized void reLoad(String path) {
         httpserver.reLoad(path);
+    }
+
+    public synchronized void grant(String path) {
+        ThinHttpHandler handler = httpserver.getHandlerMap().get(path);
+        if (null != handler) {
+            handler.setHttpServer(httpserver);
+        }
     }
 
     public synchronized void unLoad(String path) {

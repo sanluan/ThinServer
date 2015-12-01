@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="js/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+<a href="manager/click/0">开关1</a> <a href="manager/click/1">开关2</a> <a href="manager/click/2">开关3</a> <a href="manager/click/3">开关4</a>
+<script>
+$('a').click(function(){
+	$.getJSON($(this).attr('href'), function(data){
+		if(data.result) {
+			location.reload(true);
+		}
+	});
+	return false;
+});
+</script>
+</body>
+</html>

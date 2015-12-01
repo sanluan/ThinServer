@@ -94,6 +94,13 @@ public class SocketServerController implements Runnable, Thin {
                             output.println("Invalid number of load parameters");
                         }
                         break;
+                    case ThinServerController.COMMOND_GRANT:
+                        if (1 < commonds.length) {
+                            controller.grant(commonds[1]);
+                        } else {
+                            output.println("Invalid number of load parameters");
+                        }
+                        break;
                     case ThinServerController.COMMOND_BYE:
                         flag = false;
                         close();

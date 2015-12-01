@@ -5,7 +5,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Log {
+import com.sanluan.server.Thin;
+
+public class Log implements Thin {
     private String className;
     protected static DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
     PrintStream error = System.err;

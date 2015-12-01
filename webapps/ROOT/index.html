@@ -45,23 +45,24 @@
 	  <br>
 	  <h1>已部署应用</h1>
 	  <div class="mui-panel">
-<#list handlerMap?keys>
+<#if handlerMap??>
+	<#list handlerMap?keys>
 		<ul class="mui-tabs__bar">
 		<#items as k>
 			<li<#if k?is_first> class="mui--is-active"</#if>><a data-mui-toggle="tab" class="mui-btn--raised" data-mui-controls="pane-justified-${k?index}">${k}</a></li>
 		</#items>
 			<li<#if handlerMap?keys?size lt 1> class="mui--is-active"</#if>><a data-mui-toggle="tab" class="mui-btn--raised" data-mui-controls="pane-justified-${handlerMap?keys?size}">+</a></li>
 		</ul>
-</#list>
-<#list handlerMap?keys as k>
+	</#list>
+	<#list handlerMap?keys as k>
 		<div class="mui-tabs__pane<#if k?is_first> mui--is-active</#if>" id="pane-justified-${k?index}">
-			<h2>应用路径：${handlerMap[k].webappPath} <a href="${k}/" target="_blank">访问</a></h2>
+			<h2>应用路径：${handlerMap[k].webappPath}<#if 'ROOT'!=k> <a href="${k}/" target="_blank">访问</a></#if></h2>
 			<#if 'ROOT'!=k>
 				<a href="manager/unload/${k}" class="mui-btn mui-btn--primary">卸载</a>
 			</#if>
 			<a href="manager/reload/${k}" class="mui-btn mui-btn--primary">重新加载</a>
 		</div>
-</#list>
+	</#list>
 		<div class="mui-tabs__pane<#if handlerMap?keys?size lt 1> mui--is-active</#if>" id="pane-justified-${handlerMap?keys?size}">
 			<h2>添加新应用</h2>
 			<div class="mui-form--inline">
@@ -82,6 +83,9 @@
 				</label>
 			</div>
 		</div>
+<#else>
+		<p>本应用未得到管理授权</p>
+</#if>
 	  </div>
 	</div>
 </div>
