@@ -1,0 +1,3 @@
+#!/bin/sh
+. `dirname $0`/setclasspath
+"$EXECUTABLE" -classpath "$CLASSPATH" com.sanluan.server.ThinHttpServer>`dirname $0`/out.log

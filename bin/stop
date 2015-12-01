@@ -1,0 +1,3 @@
+#!/bin/sh
+. `pwd`/setclasspath
+"$EXECUTABLE" -classpath "$CLASSPATH" com.sanluan.server.ThinServerController shutdown

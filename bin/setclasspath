@@ -1,0 +1,15 @@
+#!/bin/sh
+cd ..
+THINSERVER_HOME=`pwd`
+EXECUTABLE=java
+if [ ! -z "$CLASSPATH" ] ; then
+  CLASSPATH="":
+fi
+for file in `ls lib`
+ do
+   JAR_FILE="$THINSERVER_HOME"/lib/"$file"
+   if [ -f "$JAR_FILE" ] ; then
+     CLASSPATH="$JAR_FILE"
+   fi
+done
+echo $CLASSPATH
