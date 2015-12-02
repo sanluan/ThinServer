@@ -1,3 +1,4 @@
 ROOT
-demo1
 grant ROOT
+gpio4pi
+grant gpio4pi

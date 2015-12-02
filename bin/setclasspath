@@ -1,15 +1,15 @@
 #!/bin/sh
-cd ..
+cd `dirname $0`
+cd ../
 THINSERVER_HOME=`pwd`
 EXECUTABLE=java
 if [ ! -z "$CLASSPATH" ] ; then
   CLASSPATH="":
 fi
-for file in `ls lib`
+for file in `ls $THINSERVER_HOME/lib/*.jar`
  do
-   JAR_FILE="$THINSERVER_HOME"/lib/"$file"
-   if [ -f "$JAR_FILE" ] ; then
-     CLASSPATH="$JAR_FILE"
+   if [ -f "$file" ] ; then
+     CLASSPATH="$CLASSPATH""$file"
    fi
 done
 echo $CLASSPATH

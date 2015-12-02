@@ -1,0 +1,22 @@
+2015/12/02 22:40:44:201 CST [INFO] com.sanluan.server.ThinHttpServer.<init>(ThinHttpServer.java:36)
+Http Listen on 80
+2015/12/02 22:40:44:217 CST [INFO] com.sanluan.server.ThinHttpServer.<init>(ThinHttpServer.java:38)
+Control Listen on 8010
+2015/12/02 22:40:44:217 CST [INFO] com.sanluan.server.ThinHttpServer.load(ThinHttpServer.java:69)
+[ROOT] initialize start!
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.handler.DefaultHttpHandler.init(DefaultHttpHandler.java:60)
+/manager/* mapping to com.sanluan.manager.ManagerServlet
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.handler.DefaultHttpHandler.init(DefaultHttpHandler.java:60)
+*.html mapping to com.sanluan.manager.TemplateServlet
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.ThinHttpServer.load(ThinHttpServer.java:78)
+[ROOT] initialize complete!
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.ThinHttpServer.load(ThinHttpServer.java:69)
+[gpio4pi] initialize start!
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.handler.DefaultHttpHandler.init(DefaultHttpHandler.java:60)
+/manager/* mapping to com.sanluan.gpio4pi.ManagerServlet
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.ThinHttpServer.load(ThinHttpServer.java:78)
+[gpio4pi] initialize complete!
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.ThinHttpServer.<init>(ThinHttpServer.java:41)
+Http Listen on 80
+2015/12/02 22:40:44:342 CST [INFO] com.sanluan.server.ThinHttpServer.<init>(ThinHttpServer.java:42)
+Control Listen on 8010
