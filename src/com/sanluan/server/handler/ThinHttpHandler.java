@@ -4,13 +4,13 @@ import static com.sanluan.server.log.Log.getLog;
 
 import java.io.IOException;
 
-import com.sanluan.server.Thin;
 import com.sanluan.server.ThinHttpServer;
+import com.sanluan.server.base.ThinHttp;
 import com.sanluan.server.log.Log;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-public abstract class ThinHttpHandler implements HttpHandler, Thin {
+public abstract class ThinHttpHandler implements HttpHandler, ThinHttp {
     protected String webappPath;
     protected ThinHttpServer httpServer;
     final Log log = getLog(getClass());
@@ -36,7 +36,12 @@ public abstract class ThinHttpHandler implements HttpHandler, Thin {
     }
 
     public String getPath(HttpExchange httpExchange) {
-        return httpExchange.getRequestURI().getPath().substring(httpExchange.getHttpContext().getPath().length());
+        String contextPath = httpExchange.getHttpContext().getPath();
+        if (SEPARATOR.equals(contextPath)) {
+            return httpExchange.getRequestURI().getPath();
+        } else {
+            return httpExchange.getRequestURI().getPath().substring(contextPath.length());
+        }
     }
 
     @Override

@@ -8,18 +8,18 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.sanluan.server.Thin;
-import com.sanluan.server.ThinServerController;
+import com.sanluan.server.ThinFtpServerController;
+import com.sanluan.server.base.ThinFtp;
 import com.sanluan.server.log.Log;
 
-public class ClientServerController implements Thin {
+public class FtpServerControllerSocketClient implements ThinFtp {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
     private String password;
     final Log log = getLog(getClass());
 
-    public ClientServerController(String ip, int port) {
+    public FtpServerControllerSocketClient(String ip, int port) {
         try {
             socket = new Socket(ip, port);
             output = new PrintWriter(socket.getOutputStream(), true);
@@ -41,33 +41,13 @@ public class ClientServerController implements Thin {
         }
     }
 
-    public void reLoad(String path) {
-        output.println(ThinServerController.COMMOND_RELOAD + BLANKSPACE + path);
-        readLine();
-    }
-
-    public void unLoad(String path) {
-        output.println(ThinServerController.COMMOND_UNLOAD + BLANKSPACE + path);
-        readLine();
-    }
-
-    public void load(String path, String webappPath) {
-        output.println(ThinServerController.COMMOND_LOAD + BLANKSPACE + path + BLANKSPACE + webappPath);
-        readLine();
-    }
-
-    public void grant(String path) {
-        output.println(ThinServerController.COMMOND_GRANT + BLANKSPACE + path);
-        readLine();
-    }
-
-    public void load(String path) {
-        output.println(ThinServerController.COMMOND_LOAD + BLANKSPACE + path);
+    public void adduser(String path) {
+        output.println(ThinFtpServerController.COMMOND_ADDUSER + BLANKSPACE + path);
         readLine();
     }
 
     public void shutdown() {
-        output.println(ThinServerController.COMMOND_SHUTDOWN);
+        output.println(ThinFtpServerController.COMMOND_SHUTDOWN);
         readLine();
     }
 

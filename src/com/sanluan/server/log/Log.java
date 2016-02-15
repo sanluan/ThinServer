@@ -5,7 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.sanluan.server.Thin;
+import com.sanluan.server.base.Thin;
 
 public class Log implements Thin {
     private String className;

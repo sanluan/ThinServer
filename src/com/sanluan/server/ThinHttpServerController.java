@@ -10,14 +10,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import com.sanluan.server.base.ThinHttp;
 import com.sanluan.server.handler.ThinHttpHandler;
 import com.sanluan.server.log.Log;
-import com.sanluan.server.socket.ClientServerController;
-import com.sanluan.server.socket.SocketServerController;
+import com.sanluan.server.socket.HttpServerControllerSocketClient;
+import com.sanluan.server.socket.HttpServerControllerSocketServer;
 
-public class ThinServerController implements Thin {
+public class ThinHttpServerController implements ThinHttp {
     private ThinHttpServer httpserver;
-    public final static String LOAD_CONF = "conf/load";
+    public final static String HTTP_LOAD_CONF = "conf/http.conf";
+    public final static String Http_CONF = "conf/Http.conf";
     public static final String COMMOND_LOAD = "load";
     public static final String COMMOND_RELOAD = "reload";
     public static final String COMMOND_BYE = "bye";
@@ -26,14 +28,14 @@ public class ThinServerController implements Thin {
     public static final String COMMOND_GRANT = "grant";
     final Log log = getLog(getClass());
 
-    public ThinServerController(ThinHttpServer httpServer) {
+    public ThinHttpServerController(ThinHttpServer httpServer) {
         this.httpserver = httpServer;
     }
 
     public static void main(String[] args) {
-        final Log log = getLog(ThinServerController.class);
-        ClientServerController client = new ClientServerController("localhost", Integer.getInteger(
-                "com.sanluan.httpserver.MiniHttpServer.controlPort", 8010).intValue());
+        final Log log = getLog(ThinHttpServerController.class);
+        HttpServerControllerSocketClient client = new HttpServerControllerSocketClient("localhost", Integer.getInteger(
+                "com.sanluan.server.ThinHttpServer.controlPort", 8010).intValue());
         if (null != args && 0 < args.length) {
             switch (args[0].toLowerCase()) {
             case COMMOND_SHUTDOWN:
@@ -84,17 +86,21 @@ public class ThinServerController implements Thin {
         }
     }
 
-    public synchronized boolean shutdownServerSocketController() {
-        log.info("The server is shutting down!");
-        return httpserver.shutdownServerSocketController();
+    public synchronized boolean shutdownControllerSocketServer() {
+        if (null != httpserver) {
+            log.info("The server is shutting down!");
+            return httpserver.shutdownControllerSocketServer();
+        } else {
+            return false;
+        }
     }
 
     public void loadConfig() {
-        File loadConf = new File(LOAD_CONF);
-        if (loadConf.exists() && loadConf.isFile()) {
+        File file = new File(HTTP_LOAD_CONF);
+        if (file.exists() && file.isFile()) {
             try {
-                FileInputStream inputStream = new FileInputStream(loadConf);
-                InputStreamReader read = new InputStreamReader(new FileInputStream(loadConf), DEFAULT_CHARSET);
+                FileInputStream inputStream = new FileInputStream(file);
+                InputStreamReader read = new InputStreamReader(new FileInputStream(file), DEFAULT_CHARSET);
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
@@ -123,40 +129,52 @@ public class ThinServerController implements Thin {
     }
 
     public synchronized void load(String path, String webappPath) {
-        httpserver.load(path, webappPath);
+        if (null != httpserver) {
+            httpserver.load(path, webappPath);
+        }
     }
 
     public synchronized void reLoad(String path) {
-        httpserver.reLoad(path);
+        if (null != httpserver) {
+            httpserver.reLoad(path);
+        }
     }
 
     public synchronized void grant(String path) {
-        ThinHttpHandler handler = httpserver.getHandlerMap().get(path);
-        if (null != handler) {
-            handler.setHttpServer(httpserver);
+        if (null != httpserver) {
+            ThinHttpHandler handler = httpserver.getHandlerMap().get(path);
+            if (null != handler) {
+                handler.setHttpServer(httpserver);
+            }
         }
     }
 
     public synchronized void unLoad(String path) {
-        httpserver.unLoad(path);
+        if (null != httpserver) {
+            httpserver.unLoad(path);
+        }
     }
 
     public synchronized void load(String path) {
-        httpserver.load(path);
+        if (null != httpserver) {
+            httpserver.load(path);
+        }
     }
 
     public synchronized void shutdown() {
         shutdownHttpserver();
-        shutdownServerSocketController();
+        shutdownControllerSocketServer();
     }
 
     public synchronized void shutdownHttpserver() {
         log.info("The server is shutting down!");
-        httpserver.stop();
+        if (null != httpserver) {
+            httpserver.stop();
+        }
         log.info("The server is already shutdown!");
     }
 
-    public static void createServer(Socket socket, ThinServerController controller) {
-        new Thread(new SocketServerController(socket, controller)).start();
+    public static void createServer(Socket socket, ThinHttpServerController controller) {
+        new Thread(new HttpServerControllerSocketServer(socket, controller)).start();
     }
 }

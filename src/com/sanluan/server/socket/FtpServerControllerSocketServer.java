@@ -8,19 +8,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import com.sanluan.server.Thin;
-import com.sanluan.server.ThinServerController;
+import com.sanluan.server.ThinFtpServerController;
+import com.sanluan.server.base.ThinFtp;
 import com.sanluan.server.log.Log;
 
-public class SocketServerController implements Runnable, Thin {
+public class FtpServerControllerSocketServer implements Runnable, ThinFtp {
     private Socket socket;
-    private ThinServerController controller;
+    private ThinFtpServerController controller;
     private BufferedReader input;
     private PrintWriter output;
     private String password;
     final Log log = getLog(getClass());
 
-    public SocketServerController(Socket socket, ThinServerController controller) {
+    public FtpServerControllerSocketServer(Socket socket, ThinFtpServerController controller) {
         this.socket = socket;
         this.controller = controller;
         try {
@@ -61,47 +61,21 @@ public class SocketServerController implements Runnable, Thin {
                 if (null != commonds && 0 < commonds.length) {
                     log.info(socket.getInetAddress().toString() + " exec the commond :" + commonds[0]);
                     switch (commonds[0].toLowerCase()) {
-                    case ThinServerController.COMMOND_SHUTDOWN:
-                        controller.shutdownHttpserver();
+                    case ThinFtpServerController.COMMOND_SHUTDOWN:
+                        controller.shutdownFtpserver();
                         close();
-                        if (controller.shutdownServerSocketController()) {
+                        if (controller.shutdownControllerSocketServer()) {
                             flag = false;
                         }
                         break;
-                    case ThinServerController.COMMOND_LOAD:
-                        switch (commonds.length) {
-                        case 2:
-                            controller.load(commonds[1]);
-                            break;
-                        case 3:
-                            controller.load(commonds[1], commonds[2]);
-                            break;
-                        default:
-                            output.println("Invalid number of load parameters");
-                        }
-                        break;
-                    case ThinServerController.COMMOND_UNLOAD:
+                    case ThinFtpServerController.COMMOND_ADDUSER:
                         if (1 < commonds.length) {
-                            controller.unLoad(commonds[1]);
+                            controller.addUser(commonds[1]);
                         } else {
                             output.println("Invalid number of load parameters");
                         }
                         break;
-                    case ThinServerController.COMMOND_RELOAD:
-                        if (1 < commonds.length) {
-                            controller.reLoad(commonds[1]);
-                        } else {
-                            output.println("Invalid number of load parameters");
-                        }
-                        break;
-                    case ThinServerController.COMMOND_GRANT:
-                        if (1 < commonds.length) {
-                            controller.grant(commonds[1]);
-                        } else {
-                            output.println("Invalid number of load parameters");
-                        }
-                        break;
-                    case ThinServerController.COMMOND_BYE:
+                    case ThinFtpServerController.COMMOND_BYE:
                         flag = false;
                         close();
                         break;

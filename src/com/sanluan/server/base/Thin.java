@@ -1,4 +1,4 @@
-package com.sanluan.server;
+package com.sanluan.server.base;
 
 import java.nio.charset.Charset;
 

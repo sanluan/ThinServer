@@ -1,8 +1,8 @@
 package com.sanluan.server.servlet;
 
-import com.sanluan.server.Thin;
+import com.sanluan.server.base.ThinHttp;
 import com.sun.net.httpserver.HttpExchange;
 
-public interface ThinServlet extends Thin {
+public interface ThinServlet extends ThinHttp {
     public void deal(String path, HttpExchange httpExchange);
 }

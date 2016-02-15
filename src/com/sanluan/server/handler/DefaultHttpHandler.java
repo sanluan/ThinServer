@@ -50,7 +50,7 @@ public class DefaultHttpHandler extends ThinHttpHandler {
                         defaultServlet = servlet;
                     } else {
                         if (path.startsWith(SEPARATOR) && path.endsWith(SEPARATOR + "*")) {
-                            dirMappings.put(path.substring(1, path.length() - 1), servlet);
+                            dirMappings.put(path.substring(0, path.length() - 1), servlet);
                         } else if (path.startsWith("*.")) {
                             fileTypeMappings.put(path.substring(1), servlet);
                         } else {
@@ -114,7 +114,7 @@ public class DefaultHttpHandler extends ThinHttpHandler {
     }
 
     protected void cache(String path, ThinServlet servlet) {
-        if (50 <= cachedUrl.size()) {
+        while (50 <= cachedUrl.size()) {
             cachedMappings.remove(cachedUrl.remove(0));
         }
         cachedMappings.put(path, servlet);

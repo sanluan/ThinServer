@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sanluan.server.base.ThinHttp;
 import com.sanluan.server.handler.DefaultHttpHandler;
 import com.sanluan.server.handler.ThinHttpHandler;
 import com.sanluan.server.log.Log;
@@ -21,12 +22,12 @@ import com.sun.net.httpserver.spi.HttpServerProvider;
  * ThinHttpServer
  *
  */
-public class ThinHttpServer implements Thin {
+public class ThinHttpServer implements ThinHttp {
     public final static String SERVER_ROOT_PATH = "webapps";
     public final static String WEBAPP_ROOT_PATH = "ROOT";
     final Log log = getLog(getClass());
     private HttpServer httpserver;
-    private ServerSocket serverSocket;
+    private ServerSocket controllerSocket;
     private Map<String, ThinHttpHandler> handlerMap = new HashMap<String, ThinHttpHandler>();
 
     public ThinHttpServer(int port, int control_port) {
@@ -34,14 +35,14 @@ public class ThinHttpServer implements Thin {
             httpserver = HttpServerProvider.provider().createHttpServer(new InetSocketAddress(port), 10000);
             httpserver.start();
             log.info("Http Listen on " + port);
-            serverSocket = new ServerSocket(control_port);
+            controllerSocket = new ServerSocket(control_port);
             log.info("Control Listen on " + control_port);
-            ThinServerController controller = new ThinServerController(this);
+            ThinHttpServerController controller = new ThinHttpServerController(this);
             controller.loadConfig();
-            log.info("Http Listen on " + port);
-            log.info("Control Listen on " + control_port);
-            while (!serverSocket.isClosed()) {
-                ThinServerController.createServer(serverSocket.accept(), controller);
+            log.info("Http Listened on " + port);
+            log.info("Control Listened on " + control_port);
+            while (!controllerSocket.isClosed()) {
+                ThinHttpServerController.createServer(controllerSocket.accept(), controller);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -68,9 +69,6 @@ public class ThinHttpServer implements Thin {
     public void load(String path, String webappPath) {
         log.info("[" + path + "] initialize start!");
         ThinHttpHandler handler = new DefaultHttpHandler();
-        if (WEBAPP_ROOT_PATH == path) {
-            handler.setHttpServer(this);
-        }
         if (null == webappPath) {
             webappPath = SERVER_ROOT_PATH + SEPARATOR + path;
         }
@@ -103,10 +101,10 @@ public class ThinHttpServer implements Thin {
         }
     }
 
-    public synchronized boolean shutdownServerSocketController() {
+    public synchronized boolean shutdownControllerSocketServer() {
         try {
-            if (null != serverSocket) {
-                serverSocket.close();
+            if (null != controllerSocket) {
+                controllerSocket.close();
             }
             return true;
         } catch (IOException e) {

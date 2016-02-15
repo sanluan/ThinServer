@@ -1,0 +1,128 @@
+package com.sanluan.server.socket;
+
+import static com.sanluan.server.log.Log.getLog;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+import com.sanluan.server.ThinHttpServerController;
+import com.sanluan.server.base.ThinHttp;
+import com.sanluan.server.log.Log;
+
+public class HttpServerControllerSocketServer implements Runnable, ThinHttp {
+    private Socket socket;
+    private ThinHttpServerController controller;
+    private BufferedReader input;
+    private PrintWriter output;
+    private String password;
+    final Log log = getLog(getClass());
+
+    public HttpServerControllerSocketServer(Socket socket, ThinHttpServerController controller) {
+        this.socket = socket;
+        this.controller = controller;
+        try {
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException e) {
+            log.error("The server master start error:" + e.getMessage());
+        }
+    }
+
+    private void close() {
+        output.println("bye~");
+        try {
+            input.close();
+        } catch (IOException e) {
+        }
+        output.close();
+        try {
+            socket.close();
+        } catch (IOException e) {
+        }
+    }
+
+    public void run() {
+        try {
+            boolean flag = true;
+            log.info(socket.getInetAddress().toString() + " try to control the server");
+            if (null != password) {
+                output.println("please input your password:");
+                if (!password.equalsIgnoreCase(input.readLine())) {
+                    flag = false;
+                    close();
+                }
+            }
+            while (flag) {
+                output.println("what do you want to do?");
+                String[] commonds = input.readLine().split(BLANKSPACE);
+                if (null != commonds && 0 < commonds.length) {
+                    log.info(socket.getInetAddress().toString() + " exec the commond :" + commonds[0]);
+                    switch (commonds[0].toLowerCase()) {
+                    case ThinHttpServerController.COMMOND_SHUTDOWN:
+                        controller.shutdownHttpserver();
+                        close();
+                        if (controller.shutdownControllerSocketServer()) {
+                            flag = false;
+                        }
+                        break;
+                    case ThinHttpServerController.COMMOND_LOAD:
+                        switch (commonds.length) {
+                        case 2:
+                            controller.load(commonds[1]);
+                            break;
+                        case 3:
+                            controller.load(commonds[1], commonds[2]);
+                            break;
+                        default:
+                            output.println("Invalid number of load parameters");
+                        }
+                        break;
+                    case ThinHttpServerController.COMMOND_UNLOAD:
+                        if (1 < commonds.length) {
+                            controller.unLoad(commonds[1]);
+                        } else {
+                            output.println("Invalid number of load parameters");
+                        }
+                        break;
+                    case ThinHttpServerController.COMMOND_RELOAD:
+                        if (1 < commonds.length) {
+                            controller.reLoad(commonds[1]);
+                        } else {
+                            output.println("Invalid number of load parameters");
+                        }
+                        break;
+                    case ThinHttpServerController.COMMOND_GRANT:
+                        if (1 < commonds.length) {
+                            controller.grant(commonds[1]);
+                        } else {
+                            output.println("Invalid number of load parameters");
+                        }
+                        break;
+                    case ThinHttpServerController.COMMOND_BYE:
+                        flag = false;
+                        close();
+                        break;
+                    default:
+                        output.println("i cann't understand!");
+                    }
+                }
+            }
+        } catch (Exception e) {
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (Exception e) {
+                    socket = null;
+                }
+            }
+        }
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}

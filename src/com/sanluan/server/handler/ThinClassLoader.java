@@ -16,11 +16,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sanluan.server.Thin;
 import com.sanluan.server.application.ThinInitializer;
+import com.sanluan.server.base.Thin;
+import com.sanluan.server.base.ThinHttp;
 import com.sanluan.server.log.Log;
 
-public class ThinClassLoader extends URLClassLoader implements Thin {
+public class ThinClassLoader extends URLClassLoader implements ThinHttp {
     final Log log = getLog(getClass());
     private static final String CLASS_EXT = ".class";
     private static final String WEBAPP_LIB = "/lib";
@@ -53,11 +54,6 @@ public class ThinClassLoader extends URLClassLoader implements Thin {
                 for (Path entry : stream) {
                     addURL(entry.toUri().toURL());
                 }
-                // stream = Files.newDirectoryStream(Paths.get(libPath),
-                // filter);
-                // for (Path entry : stream) {
-                // loadJarFile(entry.toFile(), "");
-                // }
             }
             for (URL url : urls) {
                 try {
@@ -98,23 +94,6 @@ public class ThinClassLoader extends URLClassLoader implements Thin {
             log.error(e.getMessage());
         }
     }
-
-    // private void loadJarFile(File file, String packageName) {
-    // try {
-    // @SuppressWarnings("resource")
-    // ZipFile zipFile = new ZipFile(file);
-    // for (ZipEntry entry : Collections.list(zipFile.entries())) {
-    // String entryName = entry.getName();
-    // if (!entry.isDirectory() && entry.getSize() > 0 &&
-    // entryName.startsWith(packageName)
-    // && entryName.endsWith(CLASS_EXT)) {
-    // addClass(entry.getName());
-    // }
-    // }
-    // } catch (IOException e) {
-    // log.error("load library file error:" + e.getMessage());
-    // }
-    // }
 
     private void addClass(String className) {
         try {
