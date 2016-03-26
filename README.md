@@ -46,6 +46,10 @@ conf/ftp.conf文件中可以配置ftp用户格式为：用户@密码@路径 或 
 
 ![](doc/ftp.jpg)
 
+![](doc/ftp_login.jpg)
+
+![](doc/ftp_web.jpg)
+
 ![](doc/index1.png)
 
 ![](doc/index2.png)

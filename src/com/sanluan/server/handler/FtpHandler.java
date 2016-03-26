@@ -22,8 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import com.sanluan.server.ThinFtpServer;
 import com.sanluan.server.ThinFtpServer.User;
@@ -32,8 +32,8 @@ import com.sanluan.server.log.Log;
 
 public class FtpHandler implements Runnable, ThinFtp {
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
-    public static final DateFormat LIST_DATE_FORMAT = new SimpleDateFormat("MM dd HH:mm");
-    public static final DateFormat LIST_DATE_FORMAT_ = new SimpleDateFormat("MM dd yyyy");
+    public static final DateFormat LIST_DATE_FORMAT = new SimpleDateFormat("MMM dd HH:mm", Locale.ENGLISH);
+    public static final DateFormat LIST_DATE_FORMAT1 = new SimpleDateFormat("MMM dd yyyy", Locale.ENGLISH);
     private ThinFtpServer server;
     private Socket socket; // 用于控制的套接字
     private Socket transportSocket; // 用于传输的套接字
@@ -54,7 +54,7 @@ public class FtpHandler implements Runnable, ThinFtp {
         this.server = server;
         try {
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
+            output = new PrintWriter(socket.getOutputStream(), false);
         } catch (IOException e) {
             log.error("The ftp server start error:" + e.getMessage());
         }
@@ -78,150 +78,151 @@ public class FtpHandler implements Runnable, ThinFtp {
                         param = inputString.substring(index + 1, inputString.length());
                     }
                 }
-                switch (state) {
-                case State.STATE_NEED_USERNAME:
-                    flag = checkUsername(command, param);
-                    break;
-                case State.STATE_NEED_PASSWORD:
-                    flag = checkPassword(command, param);
-                    break;
-                case State.STATE_READY:
-                    switch (command) {
-                    case "ABOR": // 中断数据连接程序
-                        try {
-                            if (null != transportSocket) {
-                                transportSocket.close();
-                                if (isPasv) {
-                                    transportServerSocket.close();
+                if ("QUIT".equals(command)) {
+                    output.println("221 close.");
+                    if (null != transportSocket) {
+                        transportSocket.close();
+                    }
+                    flag = false;
+                } else {
+                    switch (state) {
+                    case State.STATE_NEED_USERNAME:
+                        flag = checkUsername(command, param);
+                        break;
+                    case State.STATE_NEED_PASSWORD:
+                        flag = checkPassword(command, param);
+                        break;
+                    case State.STATE_READY:
+                        switch (command) {
+                        case "ABOR": // 中断数据连接程序
+                            try {
+                                if (null != transportSocket) {
+                                    transportSocket.close();
+                                    if (isPasv) {
+                                        transportServerSocket.close();
+                                    }
                                 }
+                            } catch (Exception e) {
+                                output.println("451 failed to send.");
                             }
-                        } catch (Exception e) {
-                            output.println("451 failed to send.");
+                            output.println("421 service unavailable.");
+                            break;
+                        case "ACCT":// 系统特权帐号
+                            output.println("500 command not supported.");
+                            break;
+                        case "ALLO":// 为服务器上的文件存储器分配字节
+                            output.println("500 command not supported.");
+                            break;
+                        case "APPE":// 添加文件到服务器同名文件
+                            output.println("500 command not supported.");
+                            break;
+                        case "CDUP":// 到上一层目录
+                            changeCurrentPath("..");
+                            break;
+                        case "CWD": // 到指定的目录
+                            changeCurrentPath(param);
+                            break;
+                        case "DELE": // 删除指定文件
+                            deleteFile(param);
+                            break;
+                        case "HELP": // 返回指定命令信息
+                            output.println("500 command not supported.");
+                            break;
+                        case "LIST": // 如果是文件名列出文件信息，如果是目录则列出文件列表
+                        case "NLST": // 列出指定目录内容
+                            listFiles(param);
+                            break;
+                        case "MODE":
+                            output.println("500 command not supported.");
+                            break;
+                        case "MDTM":
+                            lastModified(param);
+                            break;
+                        case "MKD": // 建立目录
+                            makeDir(param);
+                            break;
+                        case "NOOP":
+                            output.println("200 ok.");
+                            break;
+                        case "PASV":
+                            pasvMode();
+                            break;
+                        case "PORT": // IP 地址和两字节的端口 ID
+                            portMode(param);
+                            break;
+                        case "PWD":
+                        case "XPWD": // "当前目录" 信息
+                            output.println("257 \"" + currentPath + "\"");
+                            break;
+                        case "REIN":
+                            output.println("500 command not supported.");
+                            break;
+                        case "REST":
+                            output.println("500 command not supported.");
+                            break;
+                        case "RETR": // 从服务器中获得文件
+                            getFile(param);
+                            break;
+                        case "RMD": // 删除指定目录
+                            deleteDir(param);
+                            break;
+                        case "RNFR": // 对旧路径重命名
+                            output.println("500 command not supported.");
+                            break;
+                        case "RNTO": // 对旧路径重命名
+                            output.println("500 command not supported.");
+                            break;
+                        case "SITE": // 由服务器提供的站点特殊参数
+                            output.println("500 command not supported.");
+                            break;
+                        case "SIZE": // 文件大小
+                            size(param);
+                            break;
+                        case "SMNT": // 挂载指定文件结构
+                            output.println("500 command not supported.");
+                            break;
+                        case "STAT": // 在当前程序或目录上返回信息
+                            output.println("500 command not supported.");
+                            break;
+                        case "STOR":// 储存（复制）文件到服务器上
+                            reciveFile(param);
+                            break;
+                        case "STOU":// 储存文件到服务器名称上
+                            output.println("500 command not supported.");
+                            break;
+                        case "STRU":// 数据结构（F=文件，R=记录，P=页面）
+                            output.println("500 command not supported.");
+                            break;
+                        case "SYST":
+                            output.println("215 " + System.getProperty("os.name"));
+                            break;
+                        case "TYPE":// 数据类型（A=ASCII,E=EBCDIC,I=binary）
+                            if (param.equals("A")) {
+                                type = State.TYPE_ASCII;
+                                output.println("200 changed to ASCII.");
+                            } else if (param.equals("I")) {
+                                type = State.TYPE_IMAGE;
+                                output.println("200 changed to BINARY.");
+                            } else {
+                                output.println("504 error paramter.");
+                            }
+                            break;
+                        case "FEAT":
+                            output.println("extension supported:");
+                            output.println("MDTM");
+                            output.println("SIZE");
+                            output.println("PASV");
+                            output.println("211 ok.");
+                            break;
+                        default:
+                            output.println("500 error command.");
+                            break;
                         }
-                        output.println("421 service unavailable.");
-                        break;
-                    case "ACCT":// 系统特权帐号
-                        output.println("500 command not supported.");
-                        break;
-                    case "ALLO":// 为服务器上的文件存储器分配字节
-                        output.println("500 command not supported.");
-                        break;
-                    case "APPE":// 添加文件到服务器同名文件
-                        output.println("500 command not supported.");
-                        break;
-                    case "CDUP":// 到上一层目录
-                        changeCurrentPath("..");
-                        break;
-                    case "CWD": // 到指定的目录
-                        changeCurrentPath(param);
-                        break;
-                    case "DELE": // 删除指定文件
-                        deleteFile(param);
-                        break;
-                    case "HELP": // 返回指定命令信息
-                        output.println("500 command not supported.");
-                        break;
-                    case "LIST": // 如果是文件名列出文件信息，如果是目录则列出文件列表
-                    case "NLST": // 列出指定目录内容
-                        listFiles(param);
-                        break;
-                    case "MODE":
-                        output.println("500 command not supported.");
-                        break;
-                    case "MDTM":
-                        lastModified(param);
-                        break;
-                    case "MKD": // 建立目录
-                        makeDir(param);
-                        break;
-                    case "NOOP":
-                        output.println("200 ok.");
-                        break;
-                    case "PASV":
-                        pasvMode();
-                        break;
-                    case "PORT": // IP 地址和两字节的端口 ID
-                        portMode(param);
-                        break;
-                    case "PWD":
-                    case "XPWD": // "当前目录" 信息
-                        output.println("257 \"" + currentPath + "\"");
-                        break;
-                    case "QUIT": // 退出
-                        output.println("221 close.");
-                        if (null != transportSocket) {
-                            transportSocket.close();
-                        }
-                        flag = false;
-                        break;
-                    case "REIN":
-                        output.println("500 command not supported.");
-                        break;
-                    case "REST":
-                        output.println("500 command not supported.");
-                        break;
-                    case "RETR": // 从服务器中获得文件
-                        getFile(param);
-                        break;
-                    case "RMD": // 删除指定目录
-                        deleteDir(param);
-                        break;
-                    case "RNFR": // 对旧路径重命名
-                        output.println("500 command not supported.");
-                        break;
-                    case "RNTO": // 对旧路径重命名
-                        output.println("500 command not supported.");
-                        break;
-                    case "SITE": // 由服务器提供的站点特殊参数
-                        output.println("500 command not supported.");
-                        break;
-                    case "SIZE": // 文件大小
-                        size(param);
-                        break;
-                    case "SMNT": // 挂载指定文件结构
-                        output.println("500 command not supported.");
-                        break;
-                    case "STAT": // 在当前程序或目录上返回信息
-                        output.println("500 command not supported.");
-                        break;
-                    case "STOR":// 储存（复制）文件到服务器上
-                        reciveFile(param);
-                        break;
-                    case "STOU":// 储存文件到服务器名称上
-                        output.println("500 command not supported.");
-                        break;
-                    case "STRU":// 数据结构（F=文件，R=记录，P=页面）
-                        output.println("500 command not supported.");
-                        break;
-                    case "SYST":
-                        output.println("215 " + System.getProperty("os.name"));
-                        break;
-                    case "TYPE":// 数据类型（A=ASCII,E=EBCDIC,I=binary）
-                        if (param.equals("A")) {
-                            type = State.TYPE_ASCII;
-                            output.println("200 changed to ASCII.");
-                        } else if (param.equals("I")) {
-                            type = State.TYPE_IMAGE;
-                            output.println("200 changed to BINARY.");
-                        } else {
-                            output.println("504 error paramter.");
-                        }
-                        break;
-                    case "FEAT":
-                        output.println("extension supported:");
-                        output.println("MDTM");
-                        output.println("SIZE");
-                        output.println("PASV");
-                        output.println("211 ok.");
-                        break;
-                    default:
-                        output.println("500 error command.");
                         break;
                     }
-                    break;
                 }
+                output.flush();
             }
-            output.flush();
             input.close();
             output.close();
             socket.close();
@@ -258,7 +259,7 @@ public class FtpHandler implements Runnable, ThinFtp {
     private boolean checkPassword(String command, String password) {
         if ("PASS".equals(command)) {
             if (null != password && password.equalsIgnoreCase(user.getPassword()) || null == user.getPassword()
-                    || 0 < user.getPassword().length()) {
+                    || 0 == user.getPassword().length()) {
                 welcome();
                 return true;
             } else {
@@ -482,29 +483,8 @@ public class FtpHandler implements Runnable, ThinFtp {
             DirectoryStream<Path> stream = null;
             try {
                 stream = Files.newDirectoryStream(Paths.get(path));
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
                 for (Path entry : stream) {
-                    File file = entry.toFile();
-                    StringBuffer sb = new StringBuffer();
-                    sb.append(file.isDirectory() ? 'd' : !file.getAbsolutePath().equals(file.getCanonicalPath()) ? 'l' : '-');
-                    StringBuffer sb1 = new StringBuffer();
-                    sb1.append(file.canRead() ? 'r' : '-').append(file.canWrite() ? 'w' : '-')
-                            .append(file.canExecute() ? 'x' : '-');
-                    String rightString = sb1.toString();
-                    sb.append(rightString).append(rightString).append(rightString);
-                    cal.setTimeInMillis(file.lastModified());
-                    sb.append(BLANKSPACE)
-                            .append(file.isDirectory() ? file.listFiles().length : 1)
-                            .append(BLANKSPACE)
-                            .append("0 0")
-                            .append(BLANKSPACE)
-                            .append(String.valueOf(file.length()))
-                            .append(BLANKSPACE)
-                            .append(year == cal.get(Calendar.YEAR) ? LIST_DATE_FORMAT.format(cal.getTime()) : LIST_DATE_FORMAT_
-                                    .format(cal.getTime())).append(BLANKSPACE);
-                    sb.append(entry.getFileName().toString());
-                    dout.println(sb.toString());
+                    dout.println(getListString(entry.toFile()));
                 }
                 dout.flush();
             } catch (IOException e) {
@@ -525,6 +505,28 @@ public class FtpHandler implements Runnable, ThinFtp {
         } catch (Exception e) {
             output.println("451 failed to send.");
         }
+    }
+
+    private String getListString(File file) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(file.isDirectory() ? 'd' : '-');
+        StringBuffer rightsb = new StringBuffer();
+        rightsb.append(file.canRead() ? 'r' : '-').append(file.canWrite() ? 'w' : '-')
+                .append(file.isDirectory() ? '-' : file.canExecute() ? 'x' : '-');
+        String rightString = rightsb.toString();
+        sb.append(rightString).append(rightString).append(rightString);
+        Date fileModifiedDate = new Date(file.lastModified());
+        sb.append(BLANKSPACE)
+                .append(BLANKSPACE)
+                .append(BLANKSPACE)
+                .append(file.isDirectory() ? 3 : 1)
+                .append(" user group ")
+                .append(String.valueOf(file.length()))
+                .append(BLANKSPACE)
+                .append(System.currentTimeMillis() - file.lastModified() > 183L * 24L * 60L * 60L * 1000L ? LIST_DATE_FORMAT
+                        .format(fileModifiedDate) : LIST_DATE_FORMAT1.format(fileModifiedDate)).append(BLANKSPACE);
+        sb.append(file.getName());
+        return sb.toString();
     }
 
     private String getCurrentPath(String path) {
