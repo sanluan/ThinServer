@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #T hinServer
+=======
+# ThinServer
+>>>>>>> github/master
 
 <a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=8a633f84fb2475068182d3c447319977faca6a14dc3acf8017a160d65962a175"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Public CMS" title="Public CMS"/></a>
 
