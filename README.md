@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#T hinServer
-=======
 # ThinServer
->>>>>>> github/master
 
 <a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=8a633f84fb2475068182d3c447319977faca6a14dc3acf8017a160d65962a175"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Public CMS" title="Public CMS"/></a>
 
@@ -19,7 +15,7 @@ Http应用开发简单只需要实现com.sanluan.server.application.ThinInitiali
 
 代码中附带三个例子分别是ROOT（容器管理应用），demo1（FreeMarker实现动态示例），gpio4pi（通过遥控或网页控制4路开关示例）
 
-    gpio4pi的硬件设备与线路实现参考：http://www.publiccms.com/2015/11/05/709.html
+    gpio4pi的硬件设备与线路实现参考：http://www.publiccms.com/science/2015/11-26/197.html
 
 执行bin/startHttp启动容器，执行bin/stopHttp停止程序。http服务默认端口：80；socket控制管理端口：8010，如果需要修改，请在脚本中添加参数
 
