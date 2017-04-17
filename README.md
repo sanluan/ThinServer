@@ -1,8 +1,8 @@
-#ThinServer
+# ThinServer
 
 <a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=8a633f84fb2475068182d3c447319977faca6a14dc3acf8017a160d65962a175"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Public CMS" title="Public CMS"/></a>
 
-##简介
+## 简介
 ThinServer是基于JDK提供的HttpServer开发的Web服务容器和以socket开发的ftp server，体积小，主程序jar包只有43k。两种服务均可使用socket远程管理
 
 提供windows，linux启动、停止脚本。
@@ -39,7 +39,7 @@ conf/ftp.conf文件中可以配置ftp用户格式为：用户@密码@路径 或 
 
 欢迎一起学习和交流
 
-##授权
+## 授权
 该软件永久开源免费(MIT 授权协议)
 
 ![](doc/class.jpg)
